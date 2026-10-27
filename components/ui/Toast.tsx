@@ -3,20 +3,30 @@
 import * as RadixToast from "@radix-ui/react-toast";
 import { createContext, useContext, useState, useCallback } from "react";
 
-type ToastType = "success" | "error" | "warning" | "info";
+export type ToastType = "success" | "error" | "warning" | "info";
 
-interface ToastItem {
+export interface ToastOptions {
+  type?: ToastType;
+  title: string;
+  description?: string;
+}
+
+export interface ToastItem {
   id: string;
   type: ToastType;
   title: string;
   description?: string;
 }
 
-interface ToastContextValue {
+export interface ToastContextValue {
   toast: (type: ToastType, title: string, description?: string) => void;
+  show: (options: ToastOptions) => void;
 }
 
-const ToastContext = createContext<ToastContextValue>({ toast: () => {} });
+const ToastContext = createContext<ToastContextValue>({
+  toast: () => {},
+  show: () => {},
+});
 
 export function useToast() {
   return useContext(ToastContext);
@@ -40,8 +50,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, 4000);
   }, []);
 
+  const show = useCallback(
+    ({ type = "info", title, description }: ToastOptions) => {
+      toast(type, title, description);
+    },
+    [toast],
+  );
+
   return (
-    <ToastContext.Provider value={{ toast }}>
+    <ToastContext.Provider value={{ toast, show }}>
       <RadixToast.Provider swipeDirection="right">
         {children}
         {toasts.map((t) => (
@@ -52,31 +69,29 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               if (!open) setToasts((prev) => prev.filter((i) => i.id !== t.id));
             }}
             className={[
-              "bg-[var(--bg-elevated)] border-l-2 border-t border-r border-b border-[var(--border-subtle)]",
+              "bg-[var(--bg-surface)] border-l-4 border-t border-r border-b border-[var(--border-default)]",
               typeStyles[t.type].border,
-              "p-4 rounded-[2px] flex items-start gap-3 shadow-lg",
+              "p-4 rounded-xl flex items-start gap-3 shadow-lg",
               "data-[state=open]:animate-[slideIn_160ms_ease-out]",
               "data-[swipe=end]:animate-[swipeOut_100ms_ease-out]",
             ].join(" ")}
           >
-            <div className={["mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0", typeStyles[t.type].dot].join(" ")} />
+            <div className={["mt-1 w-2 h-2 rounded-full flex-shrink-0", typeStyles[t.type].dot].join(" ")} />
             <div className="flex flex-col gap-0.5">
-              <RadixToast.Title className="text-sm font-medium text-[var(--text-primary)]">
+              <RadixToast.Title className="text-sm font-semibold text-[var(--text-primary)]">
                 {t.title}
               </RadixToast.Title>
               {t.description && (
-                <RadixToast.Description className="text-[12px] text-[var(--text-secondary)]">
+                <RadixToast.Description className="text-xs text-[var(--text-muted)]">
                   {t.description}
                 </RadixToast.Description>
               )}
             </div>
-            <RadixToast.Close className="ml-auto text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] text-sm">
+            <RadixToast.Close className="ml-auto text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm cursor-pointer">
               ×
             </RadixToast.Close>
           </RadixToast.Root>
         ))}
-        {/* Full width minus a gutter on a phone; a fixed column once there is room. w-80 alone
-            overflows a 320px screen and drags the page sideways. */}
         <RadixToast.Viewport className="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 flex flex-col gap-2 sm:w-80 z-50" />
       </RadixToast.Provider>
     </ToastContext.Provider>

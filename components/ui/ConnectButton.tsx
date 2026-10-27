@@ -44,8 +44,8 @@ const menuContentStyle = {
   background: "var(--menu-bg)",
   color: "var(--menu-fg)",
   border: "1px solid var(--menu-border)",
-  borderRadius: "2px",
-  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.28)",
+  borderRadius: "8px",
+  boxShadow: "0 8px 24px rgba(58, 16, 32, 0.14)",
 } as const;
 
 const menuItemClass =
@@ -113,7 +113,7 @@ export default function ConnectButton() {
       <button
         className="w-full px-3 py-1.5 text-[11px] font-medium tracking-[0.02em] uppercase"
         style={{
-          borderRadius: "2px",
+          borderRadius: "8px",
           border: "1px solid var(--border-default)",
           color: "var(--text-secondary)",
           background: "transparent",

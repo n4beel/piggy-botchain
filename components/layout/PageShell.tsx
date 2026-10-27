@@ -3,177 +3,165 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ConnectButton from "@/components/ui/ConnectButton";
-import NetworkBadge from "@/components/botchain/NetworkBadge";
-import { footerLinks } from "@/lib/botchain/chain";
 import BuiltOnBotChain from "@/components/botchain/BuiltOnBotChain";
 import { app } from "@/lib/app-config";
 
-export type NavItem = { href: string; label: string };
-
-interface PageShellProps {
+export interface PageShellProps {
   children: React.ReactNode;
-  nav?: NavItem[];
-  title?: string;
-  description?: string;
 }
 
-/**
- * App frame.
- *
- * A top bar rather than ghost-pay's 220px rail. These apps have two or three screens, and a rail
- * that wide spends a fifth of a laptop window — and all of a phone — on three links. The bar is
- * the same at every width, which also means there is no drawer, no focus trap and no hamburger to
- * get wrong.
- *
- * Height is `100dvh` rather than `100vh`. On mobile Safari and Chrome, `100vh` is the viewport
- * with the browser chrome *retracted*, so a `h-screen` layout with `overflow-hidden` pushes its
- * own footer under the address bar and the user cannot scroll to it.
- */
-export default function PageShell({ children, nav = [], title, description }: PageShellProps) {
-  const links = footerLinks();
+export default function PageShell({ children }: PageShellProps) {
+  const currentPath = usePathname();
+
+  const navLinks = [
+    { href: "/", label: "Jar Shelf" },
+    { href: "/new", label: "Start a Piggy" },
+    { href: "/me", label: "My Claims" },
+  ];
+
   return (
-    <div
-      className="flex flex-col overflow-x-hidden"
-      style={{ minHeight: "100dvh", background: "var(--bg-base)" }}
-    >
-      <header
-        className="sticky top-0 z-30 flex-shrink-0"
+    <div className="piggy-stage flex flex-col min-h-screen relative overflow-x-hidden">
+      {/* Soft blush atmosphere gradient */}
+      <div
+        className="fixed inset-0 pointer-events-none -z-10"
         style={{
-          borderBottom: "1px solid var(--border-subtle)",
-          background: "var(--bg-surface)",
+          background:
+            "radial-gradient(ellipse at 50% 10%, rgba(255, 255, 255, 0.6) 0%, transparent 60%), linear-gradient(180deg, #FDF0F3 0%, #FBE3E8 100%)",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Top Shelf Bar */}
+      <nav
+        aria-label="Main Navigation"
+        className="sticky top-0 z-50 w-full backdrop-blur-md shadow-xs transition-colors"
+        style={{
+          background: "rgba(255, 255, 255, 0.88)",
+          borderBottom: "1.5px solid var(--border-default)",
         }}
       >
-        <div className="mx-auto w-full max-w-[880px] px-4 md:px-6">
-          <div className="flex items-center gap-3 py-2.5">
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
-              <span
-                className="w-2 h-2 flex-shrink-0"
-                style={{ background: "var(--accent)" }}
-                aria-hidden="true"
-              />
-              <span
-                className="text-[14px] font-semibold tracking-[-0.01em]"
-                style={{ color: "var(--text-primary)" }}
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              className="flex items-center gap-3 group select-none"
+              title="Return to Jar Shelf"
+            >
+              {/* Distinctive Jar Emblem */}
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105"
+                style={{
+                  background: "var(--bg-base)",
+                  border: "1.5px solid var(--border-strong)",
+                  boxShadow: "0 2px 6px var(--jar-shadow)",
+                }}
               >
-                {app.name}
-              </span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M7 4H17M6 7H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z"
+                    stroke="var(--accent)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <line
+                    x1="8"
+                    y1="12"
+                    x2="16"
+                    y2="12"
+                    stroke="var(--coin-gold)"
+                    strokeWidth="2"
+                    strokeDasharray="2 2"
+                  />
+                  <circle cx="12" cy="16" r="2.5" fill="var(--coin-gold)" />
+                </svg>
+              </div>
+
+              <div>
+                <span className="block text-lg font-extrabold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-none">
+                  {app.name}
+                </span>
+                <span className="block text-[11px] font-medium text-[var(--text-muted)] mt-1 tracking-normal leading-none">
+                  Commitment pots
+                </span>
+              </div>
             </Link>
 
-            <div className="flex-1" />
-            <NetworkBadge />
-            <div className="w-[150px] md:w-[180px] flex-shrink-0">
-              <ConnectButton />
-            </div>
+            <ul className="hidden md:flex items-center gap-2 list-none m-0 p-0">
+              {navLinks.map((item) => {
+                const isActive = currentPath === item.href;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={[
+                        "text-xs font-semibold px-3 py-1.5 rounded-lg transition-all",
+                        isActive
+                          ? "bg-[var(--accent)] text-[var(--accent-ink)] shadow-xs"
+                          : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)]",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          {nav.length > 0 && <Nav items={nav} />}
+          <div className="flex items-center gap-3">
+            <ConnectButton />
+          </div>
         </div>
-      </header>
+      </nav>
 
-      <main className="flex-1 mx-auto w-full max-w-[880px] px-4 py-6 md:px-6 md:py-8">
-        {(title || description) && (
-          <div className="mb-6">
-            {title && (
-              <h1
-                className="text-[20px] md:text-[24px] font-semibold tracking-[-0.015em]"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {title}
-              </h1>
-            )}
-            {description && (
-              <p
-                className="mt-1.5 text-[13px] leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {description}
-              </p>
-            )}
-          </div>
-        )}
+      {/* Main Stage */}
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
         {children}
       </main>
 
-      {/*
-        The ecosystem footer is required, not decorative. BOT Chain's project assessment criteria
-        ask that the footer or an ecosystem-partnership section carry the BOT Chain name and link
-        to both botchain.ai and the explorer; a site without it is not counted, however complete
-        the product is. It lives in the shared shell so no project can ship missing it.
-      */}
+      {/* Ground Trim Footer with Shared UI Contract */}
       <footer
-        className="flex-shrink-0 mx-auto w-full max-w-[880px] px-4 py-6 md:px-6"
-        style={{ borderTop: "1px solid var(--border-subtle)" }}
+        className="w-full mt-auto py-8 text-xs text-[var(--text-muted)]"
+        style={{
+          background: "var(--bg-surface)",
+          borderTop: "1.5px solid var(--border-default)",
+        }}
       >
-        <div className="flex flex-col gap-3">
-          <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-            {app.tagline}
-          </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <aside className="text-center md:text-left space-y-1">
+            <p className="font-bold text-[var(--text-primary)]">
+              {app.name} · Soft savings lock
+            </p>
+            <p className="text-[11px] text-[var(--text-secondary)]">
+              Breakable at any time. The penalty is your only brake.
+            </p>
+          </aside>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="inline-flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="inline-block w-2 h-2 flex-shrink-0"
-                style={{ background: "var(--accent)", borderRadius: "1px" }}
-              />
-              <BuiltOnBotChain
-                className="text-[11px] uppercase tracking-[0.06em]"
-                style={{ color: "var(--text-secondary)" }}
-              />
-            </span>
-
+          <nav
+            aria-label="BotChain Ecosystem Links"
+            className="flex flex-wrap items-center justify-center gap-6"
+          >
+            <BuiltOnBotChain className="text-[var(--text-muted)] hover:text-[var(--accent)] font-medium transition-colors" />
             <a
-              href={links.site}
+              href="https://scan.botchain.ai"
               target="_blank"
               rel="noreferrer"
-              className="text-[11px] underline"
-              style={{ color: "var(--text-tertiary)" }}
+              className="text-[var(--text-muted)] hover:text-[var(--accent)] font-medium transition-colors"
+            >
+              Block Explorer
+            </a>
+            <a
+              href="https://botchain.ai"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[var(--text-muted)] hover:text-[var(--accent)] font-medium transition-colors"
             >
               botchain.ai
             </a>
-
-            <a
-              href={links.explorer}
-              target="_blank"
-              rel="noreferrer"
-              className="text-[11px] underline"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              BOT Chain Explorer
-            </a>
-          </div>
+          </nav>
         </div>
       </footer>
     </div>
-  );
-}
-
-/**
- * Horizontal tabs. `aria-current` rather than colour alone marks the active one, and the active
- * check is an exact match so `/` does not light up on every page.
- */
-function Nav({ items }: { items: NavItem[] }) {
-  const pathname = usePathname();
-
-  return (
-    <nav className="flex items-center gap-1 -mb-px overflow-x-auto">
-      {items.map((item) => {
-        const active = pathname === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={active ? "page" : undefined}
-            className="nav-link flex items-center px-3 py-2 text-[12px] uppercase tracking-[0.04em] no-underline whitespace-nowrap"
-            style={{
-              color: active ? "var(--accent)" : "var(--text-secondary)",
-              borderBottom: `1px solid ${active ? "var(--accent)" : "transparent"}`,
-            }}
-          >
-            {item.label}
-          </Link>
-        );
-      })}
-    </nav>
   );
 }

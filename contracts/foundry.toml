@@ -22,6 +22,14 @@ tab_width = 2
 botchain = "${BOTCHAIN_RPC_URL}"
 bohr = "${BOHR_RPC_URL}"
 
+[fuzz]
+runs = 256
+
+[invariant]
+runs = 256
+depth = 128
+fail_on_revert = false
+
 [etherscan]
 botchain = { key = "${BOTSCAN_API_KEY}", url = "${BOTSCAN_VERIFIER_URL}", chain = 677 }
 bohr = { key = "${BOTSCAN_API_KEY}", url = "${BOHR_VERIFIER_URL}", chain = 968 }

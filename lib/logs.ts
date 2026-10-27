@@ -44,7 +44,7 @@ export async function getLogsChunked<TAbiEvent extends AbiEvent>(
   const targetToBlock =
     options.toBlock !== undefined
       ? options.toBlock
-      : await client.getBlockNumber({ maxAge: 0 } as any);
+      : await client.getBlockNumber({ maxAge: 0, cacheTime: 0 } as any);
 
   if (fromBlock > targetToBlock) {
     return {

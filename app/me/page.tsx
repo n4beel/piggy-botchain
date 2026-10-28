@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useAccount, useReadContract, useWriteContract, usePublicClient } from "wagmi";
+import { useAccount, useReadContract, usePublicClient } from "wagmi";
+import { useWriteContract } from "@/lib/useChainWrite";
 import { piggyAbi } from "@/lib/botchain/abi";
 import { activeBotChain } from "@/lib/botchain/chain";
 import { getDeployment, isDeployed } from "@/lib/botchain/deployment";

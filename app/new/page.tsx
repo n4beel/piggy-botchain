@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount, useWriteContract, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
+import { useWriteContract } from "@/lib/useChainWrite";
 import { isAddress, parseEther, type Address } from "viem";
 import { piggyAbi } from "@/lib/botchain/abi";
 import { activeBotChain } from "@/lib/botchain/chain";

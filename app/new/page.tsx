@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount, usePublicClient } from "wagmi";
-import { useWriteContract } from "@/lib/useChainWrite";
+import { useWriteContract, waitSuccess } from "@/lib/useChainWrite";
 import { isAddress, parseEther, type Address } from "viem";
 import { piggyAbi } from "@/lib/botchain/abi";
 import { activeBotChain } from "@/lib/botchain/chain";
@@ -140,7 +140,7 @@ export default function NewPiggyPage() {
 
       toast("info", "Opening piggy...", "Transaction broadcast to the network.");
       if (publicClient) {
-        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        const receipt = await waitSuccess(publicClient, hash);
         toast("success", "Piggy started!", "Your new savings jar is on the shelf.");
         router.push("/");
       } else {

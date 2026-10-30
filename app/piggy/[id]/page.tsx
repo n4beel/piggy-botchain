@@ -3,7 +3,7 @@
 import { use, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useAccount, useReadContract, usePublicClient } from "wagmi";
-import { useWriteContract } from "@/lib/useChainWrite";
+import { useWriteContract, waitSuccess } from "@/lib/useChainWrite";
 import { parseEther, type Address } from "viem";
 import { piggyAbi } from "@/lib/botchain/abi";
 import { activeBotChain } from "@/lib/botchain/chain";
@@ -137,7 +137,7 @@ export default function PiggyDetailPage({ params }: { params: Promise<{ id: stri
 
       toast("info", "Depositing...", "Top-up submitted.");
       if (publicClient) {
-        await publicClient.waitForTransactionReceipt({ hash });
+        await waitSuccess(publicClient, hash);
       }
       toast("success", "Deposit added!", `${formatEtherShort(amountWei)} BOT placed in the jar.`);
       refetchPot();
@@ -162,7 +162,7 @@ export default function PiggyDetailPage({ params }: { params: Promise<{ id: stri
 
       toast("info", isFree ? "Collecting..." : "Breaking piggy...", "Transaction broadcast.");
       if (publicClient) {
-        await publicClient.waitForTransactionReceipt({ hash });
+        await waitSuccess(publicClient, hash);
       }
       toast(
         "success",

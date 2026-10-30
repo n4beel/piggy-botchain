@@ -31,7 +31,7 @@ export default function PiggyDetailPage({ params }: { params: Promise<{ id: stri
   const potId = BigInt(resolvedParams.id || "0");
 
   const { address: userAddress, isConnected } = useAccount();
-  const publicClient = usePublicClient();
+  const publicClient = usePublicClient({ chainId: activeBotChain.id });
   const { toast } = useToast();
   const deployment = getDeployment(activeBotChain.id);
   const deployed = isDeployed(activeBotChain.id);

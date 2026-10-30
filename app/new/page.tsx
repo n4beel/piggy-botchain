@@ -27,7 +27,7 @@ import { useToast } from "@/components/ui/Toast";
 export default function NewPiggyPage() {
   const router = useRouter();
   const { address: userAddress, isConnected } = useAccount();
-  const publicClient = usePublicClient();
+  const publicClient = usePublicClient({ chainId: activeBotChain.id });
   const { toast } = useToast();
   const deployment = getDeployment(activeBotChain.id);
   const deployed = isDeployed(activeBotChain.id);
